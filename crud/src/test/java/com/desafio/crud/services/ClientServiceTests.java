@@ -36,10 +36,10 @@ public class ClientServiceTests {
 
 	private Long existingId;
 	private Long nonExistingId;
-	
+
 	private Client client;
 	private ClientDTO clientDTO;
-	
+
 	private PageImpl<Client> page;
 
 	@BeforeEach
@@ -54,6 +54,7 @@ public class ClientServiceTests {
 		when(repository.findById(existingId)).thenReturn(Optional.of(client));
 		when(repository.findAll((Pageable) any())).thenReturn(page);
 		when(repository.save(any())).thenReturn(client);
+		when(repository.getById(existingId)).thenReturn(client);
 
 	}
 
@@ -71,31 +72,38 @@ public class ClientServiceTests {
 
 		verify(repository, times(1)).findById(existingId);
 	}
-	
+
 	@Test
 	public void findByIdShouldThrowResourceNotFoundExceptionWhenIdDoesNotExists() {
-		
+
 		Assertions.assertThrows(ResourceNotFoundException.class, () -> {
 			service.findById(nonExistingId);
 		});
-		
+
 		verify(repository, times(1)).findById(nonExistingId);
 	}
-	
+
 	@Test
-	public void findAllPagedShouldReturnPage () {
-		
+	public void findAllPagedShouldReturnPage() {
+
 		Pageable pageable = PageRequest.of(0, 5);
-		
+
 		Page<ClientDTO> result = service.findAllPaged(pageable);
-		
+
 		Assertions.assertNotNull(result);
 		verify(repository, times(1)).findAll(pageable);
 	}
-	
+
 	@Test
 	public void insertShouldReturnClientDTO() {
 		ClientDTO dto = service.insert(clientDTO);
+		Assertions.assertNotNull(dto);
+	}
+
+	@Test
+	public void updateShouldReturnClientDTOWhenIdExists() {
+		ClientDTO dto = service.update(clientDTO, existingId);
+
 		Assertions.assertNotNull(dto);
 	}
 
