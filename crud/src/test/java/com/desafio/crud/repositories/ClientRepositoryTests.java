@@ -1,5 +1,7 @@
 package com.desafio.crud.repositories;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
@@ -10,6 +12,11 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import com.desafio.crud.entities.Client;
 
+/*
+ * Loads only Spring Data JPA related components. 
+ * Each test is transactional and rollback at the end.
+ * Unitary test: repository
+ */
 @DataJpaTest
 public class ClientRepositoryTests {
 
@@ -28,6 +35,14 @@ public class ClientRepositoryTests {
 	}
 
 	@Test
+	public void findAllShoudReturnClientListNotEmpty() {
+		List<Client> result = repository.findAll();
+		
+		Assertions.assertTrue(!result.isEmpty());
+	}	
+
+
+	@Test
 	public void findByIdShouldReturnOptionalNotEmptyWhenIdExists() {
 
 		Optional<Client> result = repository.findById(existingId);
@@ -35,13 +50,23 @@ public class ClientRepositoryTests {
 		Assertions.assertTrue(!result.isEmpty());
 		Assertions.assertTrue(result != null);
 	}
-	
+
 	@Test
 	public void findByIdShouldReturnOptionalWhenIdDoesNotExist() {
 		Optional<Client> result = repository.findById(nonExistingId);
-		
+
 		Assertions.assertTrue(result.isEmpty());
 		Assertions.assertFalse(result.isPresent());
+	}
+	
+	@Test
+	public void saveShouldPersistWhitAutoIncrementWhenIdIsNull() {
+		Client client = new Client(null, "Alice", "05988734", 4000.0,Instant.now(), 0);
+		
+		client = repository.save(client);
+		
+		Assertions.assertNotNull(client.getId());
+		Assertions.assertEquals(countTotalClients + 1, client.getId());
 	}
 
 }
