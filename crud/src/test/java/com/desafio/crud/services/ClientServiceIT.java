@@ -31,6 +31,15 @@ public class ClientServiceIT {
 	}
 
 	@Test
+	public void findAllPagedShouldReturnEmptyWhenPageDoesNotExist() {
+		PageRequest pageRequest = PageRequest.of(100, 20);
+
+		Page<ClientDTO> result = service.findAllPaged(pageRequest);
+
+		Assertions.assertTrue(result.isEmpty());
+	}
+
+	@Test
 	public void findAllPagedShouldReturnSortedPageWhenSortByName() {
 		PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("name"));
 
