@@ -2,6 +2,7 @@ package com.desafio.crud.services;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -31,7 +33,7 @@ import com.desafio.crud.services.exceptions.ResourceNotFoundException;
 
 /*
  *  Does not load context, but allows using Spring features with JUnit
- *  Unitary test: service/component
+ *  Unit test: service/component
  *  
  * */
 @ExtendWith(SpringExtension.class)
@@ -61,6 +63,8 @@ public class ClientServiceTests {
 		when(repository.getById(nonExistingId)).thenThrow(EntityNotFoundException.class);
 
 		doNothing().when(repository).deleteById(existingId);
+		
+		doThrow(EmptyResultDataAccessException.class).when(repository).deleteById(nonExistingId);
 
 	}
 
@@ -130,5 +134,17 @@ public class ClientServiceTests {
 
 		verify(repository, times(1)).deleteById(existingId);
 	}
+	
+	@Test
+	public void deleteShouldThrowResourceNotFoundExceptionWhenIdDoesNotExists () {
+		
+		Assertions.assertThrows(ResourceNotFoundException.class, () -> {
+			service.delete(nonExistingId);
+		});
+		
+		verify(repository, times(1)).deleteById(nonExistingId);
+	}
+	
+	
 
 }

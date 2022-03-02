@@ -16,7 +16,7 @@ import com.desafio.crud.entities.Client;
 /*
  * Loads only Spring Data JPA related components. 
  * Each test is transactional and rollback at the end.
- * Unitary test: repository
+ * Uniy test: repository
  */
 @DataJpaTest
 public class ClientRepositoryTests {
