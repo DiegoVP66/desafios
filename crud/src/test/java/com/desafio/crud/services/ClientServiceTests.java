@@ -1,10 +1,12 @@
 package com.desafio.crud.services;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
@@ -13,6 +15,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.desafio.crud.dto.ClientDTO;
@@ -31,6 +37,8 @@ public class ClientServiceTests {
 	private Long existingId;
 	private Long nonExistingId;
 	private Client client;
+	
+	private PageImpl<Client> page;
 
 	@BeforeEach
 	void setUp() throws Exception {
@@ -38,8 +46,10 @@ public class ClientServiceTests {
 		nonExistingId = 60L;
 
 		client = new Client(existingId, "Alice", "05944853", 4000.0, Instant.now(), 0);
+		page = new PageImpl<>(List.of(client));
 
 		when(repository.findById(existingId)).thenReturn(Optional.of(client));
+		when(repository.findAll((Pageable) any())).thenReturn(page);
 
 	}
 
@@ -66,6 +76,17 @@ public class ClientServiceTests {
 		});
 		
 		verify(repository, times(1)).findById(nonExistingId);
+	}
+	
+	@Test
+	public void findAllPagedShouldReturnPage () {
+		
+		Pageable pageable = PageRequest.of(0, 5);
+		
+		Page<ClientDTO> result = service.findAllPaged(pageable);
+		
+		Assertions.assertNotNull(result);
+		verify(repository, times(1)).findAll(pageable);
 	}
 
 }
