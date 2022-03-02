@@ -26,17 +26,29 @@ public class ClientService {
 		return list.stream().map(x -> new ClientDTO(x)).collect(Collectors.toList());
 
 	}
-	
+
 	@Transactional(readOnly = true)
-	public Page<ClientDTO> findAllPaged(Pageable pageable){
+	public Page<ClientDTO> findAllPaged(Pageable pageable) {
 		Page<Client> page = repository.findAll(pageable);
 		return page.map(x -> new ClientDTO(x));
 	}
-	
-	@Transactional
+
+	@Transactional(readOnly = true)
 	public ClientDTO findById(Long id) {
 		Optional<Client> obj = repository.findById(id);
 		Client entity = obj.orElse(null);
+		return new ClientDTO(entity);
+	}
+
+	@Transactional
+	public ClientDTO insert(ClientDTO dto) {
+		Client entity = new Client();
+		entity.setName(dto.getName());
+		entity.setCpf(dto.getCpf());
+		entity.setBirthDate(dto.getBirthDate());
+		entity.setIncome(dto.getIncome());
+		entity.setChildren(dto.getChildren());
+		entity = repository.save(entity);
 		return new ClientDTO(entity);
 	}
 }
