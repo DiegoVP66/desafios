@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.desafio.crud.entities.Client;
 
@@ -75,6 +76,13 @@ public class ClientRepositoryTests {
 		Optional<Client> result = repository.findById(existingId);
 
 		Assertions.assertFalse(result.isPresent());
+	}
+
+	@Test
+	public void deleteShouldThrowEmptyResultNotFoundExceptionWhenIdDoesNotExist() {
+		Assertions.assertThrows(EmptyResultDataAccessException.class, () -> {
+			repository.deleteById(nonExistingId);
+		});
 	}
 
 }
