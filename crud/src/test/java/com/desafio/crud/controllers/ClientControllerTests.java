@@ -59,5 +59,13 @@ public class ClientControllerTests {
 		result.andExpect(status().isOk());
 
 	}
+	
+	@Test
+	public void findAllShouldReturnList() throws Exception{
+		ResultActions result = mockMvc.perform(get("/clients")
+				.accept(MediaType.APPLICATION_JSON));
+
+		result.andExpect(status().isOk());
+	}
 
 }
