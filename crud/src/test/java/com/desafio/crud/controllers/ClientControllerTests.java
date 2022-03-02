@@ -3,6 +3,7 @@ package com.desafio.crud.controllers;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
@@ -42,30 +43,47 @@ public class ClientControllerTests {
 
 	private ClientDTO clientDTO = ClientFactory.createClientDTO();
 
+	private Long existingId;
+
 	@BeforeEach
 	void setUp() throws Exception {
+
+		existingId = 1L;
 
 		page = new PageImpl<>(List.of(clientDTO));
 
 		when(service.findAllPaged(any())).thenReturn(page);
+		when(service.findById(existingId)).thenReturn(clientDTO);
 
 	}
 
 	@Test
 	public void findAllPagedShouldReturnPage() throws Exception {
-		ResultActions result = mockMvc.perform(get("/clients/pages")
-				.accept(MediaType.APPLICATION_JSON));
+		ResultActions result = mockMvc.perform(get("/clients/pages").accept(MediaType.APPLICATION_JSON));
 
 		result.andExpect(status().isOk());
 
 	}
-	
+
 	@Test
-	public void findAllShouldReturnList() throws Exception{
-		ResultActions result = mockMvc.perform(get("/clients")
-				.accept(MediaType.APPLICATION_JSON));
+	public void findAllShouldReturnList() throws Exception {
+		ResultActions result = mockMvc.perform(get("/clients").accept(MediaType.APPLICATION_JSON));
 
 		result.andExpect(status().isOk());
+	}
+
+	@Test
+	public void findByIdShouldReturnClientWhenIdExists() throws Exception {
+		ResultActions result = mockMvc.perform(get("/clients/{id}", existingId).accept(MediaType.APPLICATION_JSON));
+
+		result.andExpect(status().isOk());
+		result.andExpect(jsonPath("$.id").exists());
+		result.andExpect(jsonPath("$.name").exists());
+		result.andExpect(jsonPath("$.cpf").exists());
+		result.andExpect(jsonPath("$.income").exists());
+		result.andExpect(jsonPath("$.birthDate").exists());
+		result.andExpect(jsonPath("$.children").exists());
+
 	}
 
 }
