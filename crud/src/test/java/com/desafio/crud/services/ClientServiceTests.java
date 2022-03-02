@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -29,6 +30,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.desafio.crud.dto.ClientDTO;
 import com.desafio.crud.entities.Client;
 import com.desafio.crud.repositories.ClientRepository;
+import com.desafio.crud.services.exceptions.DatabaseException;
 import com.desafio.crud.services.exceptions.ResourceNotFoundException;
 
 /*
@@ -41,6 +43,7 @@ public class ClientServiceTests {
 
 	private Long existingId;
 	private Long nonExistingId;
+	private Long dependentId;
 
 	private Client client;
 	private ClientDTO clientDTO;
@@ -51,6 +54,7 @@ public class ClientServiceTests {
 	void setUp() throws Exception {
 		existingId = 1L;
 		nonExistingId = 60L;
+		dependentId = 2L;
 
 		client = new Client(existingId, "Alice", "05944853", 4000.0, Instant.now(), 0);
 		clientDTO = new ClientDTO(client);
@@ -63,8 +67,9 @@ public class ClientServiceTests {
 		when(repository.getById(nonExistingId)).thenThrow(EntityNotFoundException.class);
 
 		doNothing().when(repository).deleteById(existingId);
-		
+
 		doThrow(EmptyResultDataAccessException.class).when(repository).deleteById(nonExistingId);
+		doThrow(DataIntegrityViolationException.class).when(repository).deleteById(dependentId);
 
 	}
 
@@ -134,17 +139,24 @@ public class ClientServiceTests {
 
 		verify(repository, times(1)).deleteById(existingId);
 	}
-	
+
 	@Test
-	public void deleteShouldThrowResourceNotFoundExceptionWhenIdDoesNotExists () {
-		
+	public void deleteShouldThrowResourceNotFoundExceptionWhenIdDoesNotExists() {
+
 		Assertions.assertThrows(ResourceNotFoundException.class, () -> {
 			service.delete(nonExistingId);
 		});
-		
+
 		verify(repository, times(1)).deleteById(nonExistingId);
 	}
-	
-	
+
+	@Test
+	public void deleteShouldThrowDatabaseExceptionWhenDependentId() {
+		Assertions.assertThrows(DatabaseException.class, () -> {
+			service.delete(dependentId);
+		});
+
+		verify(repository, times(1)).deleteById(dependentId);
+	}
 
 }
