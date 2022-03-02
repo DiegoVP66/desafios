@@ -36,7 +36,9 @@ public class ClientServiceTests {
 
 	private Long existingId;
 	private Long nonExistingId;
+	
 	private Client client;
+	private ClientDTO clientDTO;
 	
 	private PageImpl<Client> page;
 
@@ -46,10 +48,12 @@ public class ClientServiceTests {
 		nonExistingId = 60L;
 
 		client = new Client(existingId, "Alice", "05944853", 4000.0, Instant.now(), 0);
+		clientDTO = new ClientDTO(client);
 		page = new PageImpl<>(List.of(client));
 
 		when(repository.findById(existingId)).thenReturn(Optional.of(client));
 		when(repository.findAll((Pageable) any())).thenReturn(page);
+		when(repository.save(any())).thenReturn(client);
 
 	}
 
@@ -87,6 +91,12 @@ public class ClientServiceTests {
 		
 		Assertions.assertNotNull(result);
 		verify(repository, times(1)).findAll(pageable);
+	}
+	
+	@Test
+	public void insertShouldReturnClientDTO() {
+		ClientDTO dto = service.insert(clientDTO);
+		Assertions.assertNotNull(dto);
 	}
 
 }
