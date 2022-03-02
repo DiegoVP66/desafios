@@ -1,6 +1,7 @@
 package com.desafio.crud.services;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -59,6 +60,8 @@ public class ClientServiceTests {
 		when(repository.getById(existingId)).thenReturn(client);
 		when(repository.getById(nonExistingId)).thenThrow(EntityNotFoundException.class);
 
+		doNothing().when(repository).deleteById(existingId);
+
 	}
 
 	@Mock
@@ -116,6 +119,16 @@ public class ClientServiceTests {
 		Assertions.assertThrows(ResourceNotFoundException.class, () -> {
 			service.update(clientDTO, nonExistingId);
 		});
+	}
+
+	@Test
+	public void deleteShouldDoNothingWhenIdExists() {
+
+		Assertions.assertDoesNotThrow(() -> {
+			service.delete(existingId);
+		});
+
+		verify(repository, times(1)).deleteById(existingId);
 	}
 
 }
