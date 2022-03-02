@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.desafio.crud.dto.ClientDTO;
 import com.desafio.crud.repositories.ClientRepository;
+import com.desafio.crud.services.exceptions.ResourceNotFoundException;
 
 /*
  * Load application context
@@ -31,11 +32,13 @@ public class ClientServiceIT {
 
 	private Long countTotalClients;
 	private Long existingId;
+	private Long nonExistingId;
 
 	@BeforeEach
 	void setUp() throws Exception {
 		countTotalClients = 25L;
 		existingId = 1L;
+		nonExistingId = 1000L;
 	}
 
 	@Test
@@ -77,6 +80,13 @@ public class ClientServiceIT {
 		service.delete(existingId);
 
 		Assertions.assertEquals(countTotalClients - 1, repository.count());
+	}
+	
+	@Test
+	public void deleteShouldThrowRourceNotFoundExceptionWhenIdDoesNotExists() {
+		Assertions.assertThrows(ResourceNotFoundException.class, () -> {
+			service.delete(nonExistingId);
+		});
 	}
 
 }
