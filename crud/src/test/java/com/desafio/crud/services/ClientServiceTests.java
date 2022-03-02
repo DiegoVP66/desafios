@@ -9,6 +9,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,6 +57,7 @@ public class ClientServiceTests {
 		when(repository.findAll((Pageable) any())).thenReturn(page);
 		when(repository.save(any())).thenReturn(client);
 		when(repository.getById(existingId)).thenReturn(client);
+		when(repository.getById(nonExistingId)).thenThrow(EntityNotFoundException.class);
 
 	}
 
@@ -105,6 +108,14 @@ public class ClientServiceTests {
 		ClientDTO dto = service.update(clientDTO, existingId);
 
 		Assertions.assertNotNull(dto);
+	}
+
+	@Test
+	public void updateShouldThrowResourceNotFoundExceptionWhenIdDoesNotExists() {
+
+		Assertions.assertThrows(ResourceNotFoundException.class, () -> {
+			service.update(clientDTO, nonExistingId);
+		});
 	}
 
 }
