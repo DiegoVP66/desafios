@@ -37,10 +37,9 @@ public class ClientRepositoryTests {
 	@Test
 	public void findAllShoudReturnClientListNotEmpty() {
 		List<Client> result = repository.findAll();
-		
-		Assertions.assertTrue(!result.isEmpty());
-	}	
 
+		Assertions.assertTrue(!result.isEmpty());
+	}
 
 	@Test
 	public void findByIdShouldReturnOptionalNotEmptyWhenIdExists() {
@@ -58,15 +57,24 @@ public class ClientRepositoryTests {
 		Assertions.assertTrue(result.isEmpty());
 		Assertions.assertFalse(result.isPresent());
 	}
-	
+
 	@Test
 	public void saveShouldPersistWhitAutoIncrementWhenIdIsNull() {
-		Client client = new Client(null, "Alice", "05988734", 4000.0,Instant.now(), 0);
-		
+		Client client = new Client(null, "Alice", "05988734", 4000.0, Instant.now(), 0);
+
 		client = repository.save(client);
-		
+
 		Assertions.assertNotNull(client.getId());
 		Assertions.assertEquals(countTotalClients + 1, client.getId());
+	}
+
+	@Test
+	public void deleteByIdShouldDeleteObjectWhenIdExists() {
+		repository.deleteById(existingId);
+
+		Optional<Client> result = repository.findById(existingId);
+
+		Assertions.assertFalse(result.isPresent());
 	}
 
 }
