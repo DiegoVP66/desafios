@@ -18,6 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.desafio.crud.dto.ClientDTO;
 import com.desafio.crud.entities.Client;
 import com.desafio.crud.repositories.ClientRepository;
+import com.desafio.crud.services.exceptions.ResourceNotFoundException;
 
 /*
  *  Does not load context, but allows using Spring features with JUnit
@@ -28,11 +29,13 @@ import com.desafio.crud.repositories.ClientRepository;
 public class ClientServiceTests {
 
 	private Long existingId;
+	private Long nonExistingId;
 	private Client client;
 
 	@BeforeEach
 	void setUp() throws Exception {
 		existingId = 1L;
+		nonExistingId = 60L;
 
 		client = new Client(existingId, "Alice", "05944853", 4000.0, Instant.now(), 0);
 
@@ -53,6 +56,16 @@ public class ClientServiceTests {
 		Assertions.assertNotNull(dto);
 
 		verify(repository, times(1)).findById(existingId);
+	}
+	
+	@Test
+	public void findByIdShouldThrowResourceNotFoundExceptionWhenIdDoesNotExists() {
+		
+		Assertions.assertThrows(ResourceNotFoundException.class, () -> {
+			service.findById(nonExistingId);
+		});
+		
+		verify(repository, times(1)).findById(nonExistingId);
 	}
 
 }
