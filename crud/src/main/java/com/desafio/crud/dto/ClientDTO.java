@@ -1,22 +1,12 @@
-package com.desafio.crud.entities;
+package com.desafio.crud.dto;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.Objects;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import com.desafio.crud.entities.Client;
 
-@Entity
-@Table(name = "tb_client")
-public class Client implements Serializable {
+public class ClientDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String name;
 	private String cpf;
@@ -24,17 +14,25 @@ public class Client implements Serializable {
 	private Instant birthDate;
 	private Integer children;
 
-	public Client() {
+	public ClientDTO() {
 	}
 
-	public Client(Long id, String name, String cpf, Double income, Instant birthDate, Integer children) {
-
+	public ClientDTO(Long id, String name, String cpf, Double income, Instant birthDate, Integer children) {
 		this.id = id;
 		this.name = name;
 		this.cpf = cpf;
 		this.income = income;
 		this.birthDate = birthDate;
 		this.children = children;
+	}
+
+	public ClientDTO(Client entity) {
+		id = entity.getId();
+		name = entity.getName();
+		cpf = entity.getCpf();
+		income = entity.getIncome();
+		birthDate = entity.getBirthDate();
+		children = entity.getChildren();
 	}
 
 	public Long getId() {
@@ -83,23 +81,6 @@ public class Client implements Serializable {
 
 	public void setChildren(Integer children) {
 		this.children = children;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(id);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Client other = (Client) obj;
-		return Objects.equals(id, other.id);
 	}
 
 }
