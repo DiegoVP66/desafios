@@ -35,5 +35,13 @@ public class ClientRepositoryTests {
 		Assertions.assertTrue(!result.isEmpty());
 		Assertions.assertTrue(result != null);
 	}
+	
+	@Test
+	public void findByIdShouldReturnOptionalWhenIdDoesNotExist() {
+		Optional<Client> result = repository.findById(nonExistingId);
+		
+		Assertions.assertTrue(result.isEmpty());
+		Assertions.assertFalse(result.isPresent());
+	}
 
 }
