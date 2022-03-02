@@ -25,9 +25,23 @@ public class ClientServiceIT {
 	@Autowired
 	private ClientService service;
 
+	private Long countTotalClients;
+
 	@BeforeEach
 	void setUp() throws Exception {
+		countTotalClients = 25L;
+	}
 
+	@Test
+	public void findAllPagedShouldReturnPageWhenPageZeroSizeTen() {
+		PageRequest pageRequest = PageRequest.of(0, 10);
+
+		Page<ClientDTO> result = service.findAllPaged(pageRequest);
+
+		Assertions.assertFalse(result.isEmpty());
+		Assertions.assertEquals(0, result.getNumber());
+		Assertions.assertEquals(10, result.getSize());
+		Assertions.assertEquals(countTotalClients, result.getTotalElements());
 	}
 
 	@Test
