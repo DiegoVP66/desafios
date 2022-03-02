@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.desafio.crud.dto.ClientDTO;
+import com.desafio.crud.repositories.ClientRepository;
 
 /*
  * Load application context
@@ -25,11 +26,16 @@ public class ClientServiceIT {
 	@Autowired
 	private ClientService service;
 
+	@Autowired
+	private ClientRepository repository;
+
 	private Long countTotalClients;
+	private Long existingId;
 
 	@BeforeEach
 	void setUp() throws Exception {
 		countTotalClients = 25L;
+		existingId = 1L;
 	}
 
 	@Test
@@ -63,6 +69,14 @@ public class ClientServiceIT {
 		Assertions.assertEquals("Alan Broke", result.getContent().get(0).getName());
 		Assertions.assertEquals("Albert Tesla", result.getContent().get(1).getName());
 		Assertions.assertEquals("Alice Beauty", result.getContent().get(2).getName());
+	}
+
+	@Test
+	public void deleteShouldDeleteResourceWhenIdExists() {
+
+		service.delete(existingId);
+
+		Assertions.assertEquals(countTotalClients - 1, repository.count());
 	}
 
 }
