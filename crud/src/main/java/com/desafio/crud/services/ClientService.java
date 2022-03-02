@@ -4,7 +4,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.desafio.crud.dto.ClientDTO;
 import com.desafio.crud.entities.Client;
 import com.desafio.crud.repositories.ClientRepository;
+import com.desafio.crud.services.exceptions.DatabaseException;
+import com.desafio.crud.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class ClientService {
@@ -36,7 +42,7 @@ public class ClientService {
 	@Transactional(readOnly = true)
 	public ClientDTO findById(Long id) {
 		Optional<Client> obj = repository.findById(id);
-		Client entity = obj.orElse(null);
+		Client entity = obj.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
 		return new ClientDTO(entity);
 	}
 
@@ -50,15 +56,26 @@ public class ClientService {
 
 	@Transactional
 	public ClientDTO update(ClientDTO dto, Long id) {
-		Client entity = repository.getById(id);
-		copyDTOToEntity(dto, entity);
-		entity = repository.save(entity);
-		return new ClientDTO(entity);
+		try {
+			Client entity = repository.getById(id);
+			copyDTOToEntity(dto, entity);
+			entity = repository.save(entity);
+			return new ClientDTO(entity);
+		} catch (EntityNotFoundException e) {
+			throw new ResourceNotFoundException("Id not found: " + id);
+		}
 
 	}
-	
+
 	public void delete(Long id) {
-		repository.deleteById(id);
+		try {
+			repository.deleteById(id);
+
+		} catch (EmptyResultDataAccessException e) {
+			throw new ResourceNotFoundException("id not found");
+		} catch (DataIntegrityViolationException e) {
+			throw new DatabaseException("Integrity violation");
+		}
 	}
 
 	private void copyDTOToEntity(ClientDTO dto, Client entity) {
