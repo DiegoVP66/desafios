@@ -66,6 +66,7 @@ public class ClientControllerTests {
 		when(service.findById(nonExistingId)).thenThrow(ResourceNotFoundException.class);
 
 		when(service.update(any(), eq(existingId))).thenReturn(clientDTO);
+		when(service.update(any(), eq(nonExistingId))).thenThrow(ResourceNotFoundException.class);
 
 	}
 
@@ -120,6 +121,16 @@ public class ClientControllerTests {
 		result.andExpect(jsonPath("$.income").exists());
 		result.andExpect(jsonPath("$.birthDate").exists());
 		result.andExpect(jsonPath("$.children").exists());
+	}
+
+	@Test
+	public void updateShouldReturnResourceNotFoundExceptionWhenIdDoesNotExists() throws Exception {
+		String jsonBody = objectMapper.writeValueAsString(clientDTO);
+
+		ResultActions result = mockMvc.perform(put("/clients/{id}", nonExistingId).content(jsonBody)
+				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON));
+
+		result.andExpect(status().isNotFound());
 	}
 
 }
