@@ -3,6 +3,8 @@ package com.desafio.crud.controllers;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -23,6 +25,7 @@ import com.desafio.crud.dto.ClientDTO;
 import com.desafio.crud.services.ClientService;
 import com.desafio.crud.services.exceptions.ResourceNotFoundException;
 import com.desafio.crud.tests.ClientFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /*
  *  Load application context (integration & web testing)
@@ -44,6 +47,9 @@ public class ClientControllerTests {
 
 	private ClientDTO clientDTO = ClientFactory.createClientDTO();
 
+	@Autowired
+	private ObjectMapper objectMapper;
+
 	private Long existingId;
 	private Long nonExistingId;
 
@@ -58,6 +64,8 @@ public class ClientControllerTests {
 		when(service.findAllPaged(any())).thenReturn(page);
 		when(service.findById(existingId)).thenReturn(clientDTO);
 		when(service.findById(nonExistingId)).thenThrow(ResourceNotFoundException.class);
+
+		when(service.update(any(), eq(existingId))).thenReturn(clientDTO);
 
 	}
 
@@ -95,6 +103,23 @@ public class ClientControllerTests {
 		ResultActions result = mockMvc.perform(get("/clients/{id}", nonExistingId).accept(MediaType.APPLICATION_JSON));
 
 		result.andExpect(status().isNotFound());
+	}
+
+	@Test
+	public void updateShouldReturnClientDTOWhenIdExists() throws Exception {
+
+		String jsonBody = objectMapper.writeValueAsString(clientDTO);
+
+		ResultActions result = mockMvc.perform(put("/clients/{id}", existingId).content(jsonBody)
+				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON));
+
+		result.andExpect(status().isOk());
+		result.andExpect(jsonPath("$.id").exists());
+		result.andExpect(jsonPath("$.name").exists());
+		result.andExpect(jsonPath("$.cpf").exists());
+		result.andExpect(jsonPath("$.income").exists());
+		result.andExpect(jsonPath("$.birthDate").exists());
+		result.andExpect(jsonPath("$.children").exists());
 	}
 
 }
