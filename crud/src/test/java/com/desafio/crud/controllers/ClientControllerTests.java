@@ -2,6 +2,7 @@ package com.desafio.crud.controllers;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -70,6 +71,8 @@ public class ClientControllerTests {
 		when(service.update(any(), eq(existingId))).thenReturn(clientDTO);
 		when(service.update(any(), eq(nonExistingId))).thenThrow(ResourceNotFoundException.class);
 		when(service.insert(any())).thenReturn(clientDTO);
+		
+		doThrow(ResourceNotFoundException.class).when(service).delete(nonExistingId);
 
 	}
 
@@ -152,6 +155,13 @@ public class ClientControllerTests {
 		ResultActions result = mockMvc.perform(delete("/clients/{id}", existingId).accept(MediaType.APPLICATION_JSON));
 
 		result.andExpect(status().isNoContent());
+	}
+
+	@Test
+	public void deleteShouldReturnNotFoundWhenIdDoesNotExists() throws Exception {
+		ResultActions result = mockMvc
+				.perform(delete("/clients/{id}", nonExistingId).accept(MediaType.APPLICATION_JSON));
+		result.andExpect(status().isNotFound());
 	}
 
 }
