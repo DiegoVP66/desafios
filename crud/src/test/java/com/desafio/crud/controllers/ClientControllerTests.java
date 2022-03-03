@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.desafio.crud.dto.ClientDTO;
 import com.desafio.crud.services.ClientService;
+import com.desafio.crud.services.exceptions.ResourceNotFoundException;
 import com.desafio.crud.tests.ClientFactory;
 
 /*
@@ -44,16 +45,19 @@ public class ClientControllerTests {
 	private ClientDTO clientDTO = ClientFactory.createClientDTO();
 
 	private Long existingId;
+	private Long nonExistingId;
 
 	@BeforeEach
 	void setUp() throws Exception {
 
 		existingId = 1L;
+		nonExistingId = 50L;
 
 		page = new PageImpl<>(List.of(clientDTO));
 
 		when(service.findAllPaged(any())).thenReturn(page);
 		when(service.findById(existingId)).thenReturn(clientDTO);
+		when(service.findById(nonExistingId)).thenThrow(ResourceNotFoundException.class);
 
 	}
 
@@ -84,6 +88,13 @@ public class ClientControllerTests {
 		result.andExpect(jsonPath("$.birthDate").exists());
 		result.andExpect(jsonPath("$.children").exists());
 
+	}
+
+	@Test
+	public void findByIdShouldReturnResourceNotFoundExceptionWhenIdDoesNotExist() throws Exception {
+		ResultActions result = mockMvc.perform(get("/clients/{id}", nonExistingId).accept(MediaType.APPLICATION_JSON));
+
+		result.andExpect(status().isNotFound());
 	}
 
 }
