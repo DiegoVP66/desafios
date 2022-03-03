@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.desafio.crud.entities.Role;
 import com.desafio.crud.entities.User;
 
 public class UserDTO implements Serializable {
@@ -13,7 +12,7 @@ public class UserDTO implements Serializable {
 	private Long id;
 	private String email;
 
-	Set<RoleDTO> roles = new HashSet<>();
+	private Set<RoleDTO> roles = new HashSet<>();
 
 	public UserDTO() {
 	}
@@ -27,12 +26,8 @@ public class UserDTO implements Serializable {
 	public UserDTO(User entity) {
 		id = entity.getId();
 		email = entity.getEmail();
-		
-	}
-	
-	public UserDTO(User entity, Set<Role> categories) {
-		this(entity);
-		categories.forEach(role -> this.roles.add(new RoleDTO(role)));
+		entity.getRoles().forEach(role -> this.roles.add(new RoleDTO(role)));
+
 	}
 
 	public Long getId() {
