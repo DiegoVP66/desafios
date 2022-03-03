@@ -1,3 +1,15 @@
+INSERT INTO tb_user (email, password) VALUES ('diego@gmail.com', '$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG');
+INSERT INTO tb_user (email, password) VALUES ('alice@gmail.com', '$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG');
+
+INSERT INTO tb_role (authority) VALUES ('ROLE_OPERATOR');
+INSERT INTO tb_role (authority) VALUES ('ROLE_ADMIN');
+
+INSERT INTO tb_user_role (user_id, role_id) VALUES (1, 1);
+INSERT INTO tb_user_role (user_id, role_id) VALUES (2, 1);
+INSERT INTO tb_user_role (user_id, role_id) VALUES (2, 2);
+
+
+
 INSERT INTO tb_client (name, cpf, income, birth_Date, children ) VALUES ('Diego Vicente Pereira','058889532', 200.00, TIMESTAMP WITH TIME ZONE '1988-09-14T20:50:07.12345Z', 1);
 INSERT INTO tb_client (name, cpf, income, birth_Date, children ) VALUES ('Albert Tesla','056889532', 2000.00, TIMESTAMP WITH TIME ZONE '1980-10-01T20:30:00.12345Z', 6);
 INSERT INTO tb_client (name, cpf, income, birth_Date, children ) VALUES ('David Waters','056775433', 4000.00, TIMESTAMP WITH TIME ZONE '1960-01-10T22:26:00.12345Z', 3);
