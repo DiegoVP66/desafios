@@ -3,14 +3,26 @@ package com.desafio.crud.dto;
 import java.io.Serializable;
 import java.time.Instant;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Positive;
+
 import com.desafio.crud.entities.Client;
 
 public class ClientDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Long id;
+	
+	@NotBlank(message = "Campo requerido!")
 	private String name;
+	
+	@NotBlank(message = "Campo requerido!")
 	private String cpf;
+	
+	@Positive(message = "A renda deve  ser um valor positivo!")
 	private Double income;
+	
+	@Past(message ="A data nascimento não pode ser futura!")
 	private Instant birthDate;
 	private Integer children;
 
