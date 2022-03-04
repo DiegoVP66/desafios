@@ -5,6 +5,8 @@ import java.util.Optional;
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,6 +20,7 @@ import com.desafio.crud.entities.Role;
 import com.desafio.crud.entities.User;
 import com.desafio.crud.repositories.RoleRepository;
 import com.desafio.crud.repositories.UserRepository;
+import com.desafio.crud.services.exceptions.DatabaseException;
 import com.desafio.crud.services.exceptions.ResourceNotFoundException;
 
 @Service
@@ -67,6 +70,16 @@ public class UserService {
 
 		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Entity not found");
+		}
+	}
+
+	public void delete(Long id) {
+		try {
+			repository.deleteById(id);
+		} catch (EmptyResultDataAccessException e) {
+			throw new ResourceNotFoundException("Id not found " + id);
+		} catch (DataIntegrityViolationException e) {
+			throw new DatabaseException("Integrity violation");
 		}
 	}
 
