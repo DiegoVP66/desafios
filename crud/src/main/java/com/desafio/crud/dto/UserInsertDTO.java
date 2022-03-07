@@ -1,5 +1,8 @@
 package com.desafio.crud.dto;
 
+import com.desafio.crud.services.validation.UserInsertValid;
+
+@UserInsertValid
 public class UserInsertDTO extends UserDTO {
 
 	private static final long serialVersionUID = 1L;

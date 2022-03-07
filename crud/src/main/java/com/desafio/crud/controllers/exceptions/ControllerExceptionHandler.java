@@ -49,7 +49,7 @@ public class ControllerExceptionHandler {
 		ValidationError err = new ValidationError();
 		err.setTimestamp(Instant.now());
 		err.setStatus(status.value());
-		err.setError("Database exception");
+		err.setError("validation exception");
 		err.setMessage(e.getMessage());
 		err.setPath(request.getRequestURI());
 

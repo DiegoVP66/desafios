@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.desafio.crud.dto.RoleDTO;
 import com.desafio.crud.dto.UserDTO;
 import com.desafio.crud.dto.UserInsertDTO;
+import com.desafio.crud.dto.UserUpdateDTO;
 import com.desafio.crud.entities.Role;
 import com.desafio.crud.entities.User;
 import com.desafio.crud.repositories.RoleRepository;
@@ -53,15 +54,15 @@ public class UserService {
 	public UserDTO insert(UserInsertDTO dto) {
 		User entity = new User();
 
-		copyToDto(entity, dto);
 		entity.setPassword(passwordEncoder.encode(dto.getPassword()));
+		copyToDto(entity, dto);
 		entity = repository.save(entity);
 		return new UserDTO(entity);
 
 	}
 
 	@Transactional
-	public UserDTO update(Long id, UserDTO dto) {
+	public UserDTO update(Long id, UserUpdateDTO dto) {
 		try {
 			User entity = repository.getById(id);
 			copyToDto(entity, dto);

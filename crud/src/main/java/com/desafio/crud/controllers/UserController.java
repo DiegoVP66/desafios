@@ -20,6 +20,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.desafio.crud.dto.UserDTO;
 import com.desafio.crud.dto.UserInsertDTO;
+import com.desafio.crud.dto.UserUpdateDTO;
 import com.desafio.crud.services.UserService;
 
 @RestController
@@ -49,9 +50,9 @@ public class UserController {
 	}
 
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody @Valid UserDTO dto) {
-		dto = service.update(id, dto);
-		return ResponseEntity.ok().body(dto);
+	public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody @Valid UserUpdateDTO dto) {
+		UserDTO newDTO = service.update(id, dto);
+		return ResponseEntity.ok().body(newDTO);
 	}
 
 	@DeleteMapping(value = "/{id}")
